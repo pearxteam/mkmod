@@ -52,7 +52,7 @@ fi
 
 # Create the temp directory
 cmd="mktemp -d -t mkmod.XXXXXXXX"
-dir=$(eval ${cmd})
+dir=$(${cmd})
 if [ $? -ne 0 ]
   then
   echo "$mpr The '$cmd' command exited with a non-zero exit code"
