@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 mpr=">>"
+version="1.2"
 task="build"
 url=""
 out="$PWD/mod"
+recursion=true
 usage="Usage: mkmod <git repo URI>
 Arguments:
--b <branch>  - choose the branch to clone
--t <gradle task>  - choose the gradle task to execute, default is 'build'
+-b <branch>  - choose the branch to clone.
+-t <gradle task>  - choose the gradle task to execute, default is 'build'.
 -h  - display the help message.
--o <path>  - specify the mod artifacts output directory, default is <working dir>/mod"
+-o <path>  - specify the mod artifacts output directory, default is <working dir>/mod.
+-nr  - disable recursive cloning, enabled by default."
 
 exitAndClear() {
     if [ -n ${dir} ]
@@ -34,6 +37,7 @@ do
     -t) task=${args[i + 1]}; ((i++));;
     -o) out=${args[i + 1]}; ((i++));;
     -h) echo "$usage"; exit 0;;
+    -nr) recursion=false;;
     *)
       if [ -z "$url" ]
         then
@@ -71,8 +75,17 @@ if [ -n "$branch" ]
   cmd+=" -b $branch"
   printBranch=${branch}
 fi
+if ${recursion}
+  then
+  cmd+=" --recursive"
+fi
 
-echo "*mkmod* [URL: $url; Out: $out; Branch: $printBranch; Task: $task]"
+echo "[mkmod $version]
+--URL: $url
+--Out: $out
+--Branch: $printBranch
+--Task: $task
+--Recursive cloning: $recursion"
 
 # Clone the repo
 if ! eval ${cmd}
