@@ -51,9 +51,13 @@ $usage"
 fi
 
 # Create the temp directory
-cmd="mktemp -d -t mkmod.XXXXXXXXXXX"
+cmd="mktemp -d -t mkmod.XXXXXXXX"
 dir=$(eval ${cmd})
-if [ -z "$dir" ]
+if [ $? -ne 0 ]
+  then
+  echo "$mpr The '$cmd' command exited with a non-zero exit code"
+  exit $?
+elif [ -z "$dir" ]
   then
   echo "$mpr The '$cmd' command returned an empty string."
   exit 1
