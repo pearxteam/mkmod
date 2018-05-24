@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 mpr=">>"
-version="1.2"
+version="1.3.0"
 task="build"
 url=""
 out="$PWD/mod"
 recursion=true
+artifacts="build/libs"
 usage="Usage: mkmod <git repo URI>
 Arguments:
 -b <branch>  - choose the branch to clone.
 -t <gradle task>  - choose the gradle task to execute, default is 'build'.
 -h  - display the help message.
 -o <path>  - specify the mod artifacts output directory, default is <working dir>/mod.
--nr  - disable recursive cloning, enabled by default."
+-nr  - disable recursive cloning, enabled by default.
+-a <relative path> - specify the output build artifacts directory, default is build/libs."
 
 exitAndClear() {
     if [ -n ${dir} ]
@@ -36,6 +38,7 @@ do
     -b) branch=${args[i + 1]}; ((i++));;
     -t) task=${args[i + 1]}; ((i++));;
     -o) out=${args[i + 1]}; ((i++));;
+    -a) artifacts=${args[i + 1]}; ((i++));;
     -h) echo "$usage"; exit 0;;
     -nr) recursion=false;;
     *)
@@ -85,7 +88,8 @@ echo "[mkmod $version]
 --Out: $out
 --Branch: $printBranch
 --Task: $task
---Recursive cloning: $recursion"
+--Recursive cloning: $recursion
+--Artifacts: $artifacts"
 
 # Clone the repo
 if ! eval ${cmd}
@@ -99,6 +103,7 @@ echo "$mpr Detecting the gradle executable..."
 if [ -e "$dir/gradlew" ]
   then
   cmd="$dir/gradlew"
+  chmod +x "$cmd"
 else
   cmd="gradle"
 fi
@@ -111,7 +116,7 @@ if ! (cd ${dir}; eval ${cmd})
   echo "$mpr !!!WARNING!!! The '$cmd' command exited with a non-zero exit code, skipping..."
 fi
 
-dirLibs=${dir}/build/libs
+dirLibs="${dir}/${artifacts}"
 echo "$mpr Copying the '$dirLibs' directory into the '$out' directory..."
 cp -r "$dirLibs" "$out"
 
